@@ -3,23 +3,35 @@
 import json
 from collections import OrderedDict
 
-def tokenize(tbl_str, frame=0, sep='+'):
-    sep_idxs = [ i for i, c in enumerate(tbl_str[frame])
-                 if c == sep ]
-    slices = [ (s+1, e-1) for s, e in zip([0]+sep_idxs, sep_idxs)[1:]]
-    return ([ln[s:e].strip() for s, e in slices]
-            for ln in tbl_str if not len(ln.split()) == 1)
+def table_transpose(table_list):
+    return (list(ln) for ln in zip(*table_list))
+
+def tokenize(tbl_str, ttype,
+             frame=0,
+             junction_char='+',
+             vertical_char='|'):
+    def pretty():
+        sep_idxs = [ i for i, c in enumerate(tbl_str[frame])
+                     if c == junction_char ]
+        slices = [ (s+1, e-1) for s, e in zip([0]+sep_idxs, sep_idxs)[1:]]
+        return lambda ln: [ln[s:e].strip() for s, e in slices]
+
+    def mark_down():
+        return lambda ln: [col.strip() for col in ln.split(vertical_char)]
+
+    f = { 'pretty': pretty,
+          'mark_down': mark_down }.get(ttype)()
+
+    return (f(ln) for ln in tbl_str
+            if not len(ln.split()) == 1)
 
 
-def from_prettytable(table_str):
-    tokens = tokenize(table_str.splitlines())
-    keys = next(tokens)
-    return [OrderedDict(zip(keys, ln)) for ln in tokens]
+def from_table(table_str, ttype='pretty', key_dir='horizontal'):
 
-def from_markdown(table_str):
-    tokens = tokenize(table_str.splitlines(), frame=1, sep='|')
-    keys = next(tokens)
-    return [OrderedDict(zip(keys, ln)) for ln in tokens]
+    tokens = tokenize(table_str.splitlines(), ttype)
+    tbl_list = table_transpose(tokens) if key_dir == 'vertical' else tokens
+    keys = next(tbl_list)
+    return [OrderedDict(zip(keys, ln)) for ln in tbl_list]
 
 md_table = """|               Col1               |  Col2   |          Col3          | Numeric Column |
 |----------------------------------|---------|------------------------|----------------|
@@ -37,9 +49,21 @@ pretty_table = """+-------+-------+-------+
 +-------+-------+-------+
 """
 
+vertical_pt = """+--------+--------+
+| key    | value  |
++--------+--------+
+| item1  |  asd   |
+| item2  |  qwe   |
+| item3  |  poi   |
++--------+--------+
+"""
+
+
 def main():
-    print (from_prettytable(pretty_table))
-    print (from_markdown(md_table))
+    print (json.dumps(from_table(pretty_table), indent=2))
+    print (json.dumps(from_table(vertical_pt, key_dir='vertical')[0],
+                      indent=2))
+    print (from_table(md_table, ttype='mark_down'))
 
 if __name__ == '__main__':
         main()
