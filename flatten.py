@@ -35,7 +35,7 @@ def flatten(lst, levels=None):
              for l in lst ))
 
     def _wrapper1(lst):
-        return _core(lst, _wrapper1)
+        return _core(lst, lambda x: _core(x, _core))
 
     def _wrapper2(lst, levels):
         return (lst if levels <= 0
