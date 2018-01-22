@@ -7,12 +7,11 @@ from collections import OrderedDict
 def table_transpose(table_list):
     return (list(ln) for ln in zip(*table_list))
 
-def tokenize(tbl_str, ttype,
-             frame=0,
-             junction_char='+',
-             separator=','):
 
-    def pretty():
+def from_table(table_str, ttype='pretty', key_dir='horizontal'):
+    def pretty(tbl_ln, 
+               frame=0,
+               junction_char='+'):
         sep_idxs = [ i for i, c in enumerate(tbl_ln[frame])
                      if c == junction_char ]
         slices = [ (s+1, e-1) for s, e in zip([0]+sep_idxs, sep_idxs)[1:]]
@@ -20,16 +19,21 @@ def tokenize(tbl_str, ttype,
                 for ln in tbl_ln
                 if not len(ln.split()) == 1)
 
-    def from_csv():
-        return(csv.reader(tbl_ln, skipinitialspace=True))
+
+    def from_csv(tbl_ln, delimiter=','):
+        return(csv.reader(tbl_ln,
+                          delimiter=delimiter,
+                          skipinitialspace=True ))
+
 
     tbl_ln = tbl_str.splitlines()
-    return { 'pretty': pretty,
-             'csv': from_csv }.get(ttype)()
+    if ttype == 'pretty':
+        tokens = from_pretty(tbl_ln)
+    elif ttype == 'csv': 
+        tokens = from_csv(tbl_ln)
+    else # error
 
 
-def from_table(table_str, ttype='pretty', key_dir='horizontal'):
-    tokens = tokenize(table_str, ttype)
     tbl_list = (table_transpose(tokens) if key_dir == 'vertical'
                 else tokens)
     keys = next(tbl_list)
