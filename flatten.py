@@ -35,13 +35,12 @@ def flatten(lst, levels=None):
              for l in lst ))
 
     def _wrapper1(lst):
-        return _core(lst, lambda x: _core(x, _core))
+        return _core(lst, _wrapper1)
 
     def _wrapper2(lst, levels):
         return (lst if levels <= 0
                 else _core(lst, lambda x: _wrapper2(x, levels -1)) )
 
-    
     return list(_wrapper1(lst) if levels == None
                 else _wrapper2(lst, levels) )
 

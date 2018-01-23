@@ -27,11 +27,13 @@ def hash_table(data, key_item):
         :returns: a dictionary of 'index key':'dict body'
     """
     def update_ht(ht, list_item):
+        if not isinstance(list_item, Mapping):
+            raise TypeError("List item is not a valid dict")
         try:
             # cause KeyError if dict does not contain key_item.
             key = list_item[key_item]
             # cause TypeError if key is not hashable.
-            dummy = hash(key)
+            _ = hash(key)
         except TypeError:
             msg = 'key: {} derived by {} is not hashable'.format(key, key_item)
             raise TypeError(msg)
@@ -50,7 +52,7 @@ def hash_table(data, key_item):
     return reduce(update_ht, list_object, defaultdict(list))
 
 def main():
-    testline=[{ 'name': 'k1-c27-14-sv',
+    testlist=[{ 'name': 'k1-c27-14-sv',
                 'val': 4 },
               { 'name': 'k1-c27-13-sv',
                 'val': 9 },
@@ -70,8 +72,8 @@ def main():
                    'val': 9 }
     }
 
-    print (json.dumps(hash_table(testline, 'name'), indent=2))
-    print (json.dumps(hash_table(testdict, 'name'), indent=2))
+    print (json.dumps(hash_table(testlist, 'name'), indent=2))
+    print (json.dumps(hash_table(testdict, 'val'), indent=2))
 
 if __name__ == '__main__':
     main()

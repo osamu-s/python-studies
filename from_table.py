@@ -9,16 +9,17 @@ def table_transpose(table_list):
 
 
 def from_table(table_str, ttype='pretty', key_dir='horizontal'):
-    def pretty(tbl_ln, 
+    def from_pretty(tbl_ln, 
                frame=0,
+               horizontal_char='-',
                junction_char='+'):
-        sep_idxs = [ i for i, c in enumerate(tbl_ln[frame])
+        tbl_frame = tbl_ln[frame]
+        sep_idxs = [ i for i, c in enumerate(tbl_frame)
                      if c == junction_char ]
-        slices = [ (s+1, e-1) for s, e in zip([0]+sep_idxs, sep_idxs)[1:]]
+        slices = [ (s+1, e-1) for s, e in zip([0]+sep_idxs, sep_idxs)[1:] ]
         return ([ln[s:e].strip() for s, e in slices]
                 for ln in tbl_ln
-                if not len(ln.split()) == 1)
-
+                if ln != tbl_frame )
 
     def from_csv(tbl_ln, delimiter=','):
         return(csv.reader(tbl_ln,
@@ -26,13 +27,13 @@ def from_table(table_str, ttype='pretty', key_dir='horizontal'):
                           skipinitialspace=True ))
 
 
-    tbl_ln = tbl_str.splitlines()
+    tbl_ln = table_str.splitlines()
     if ttype == 'pretty':
         tokens = from_pretty(tbl_ln)
     elif ttype == 'csv': 
         tokens = from_csv(tbl_ln)
-    else # error
-
+    else:
+        raise TypeError('Table Type Error: from_table accepts only pretty or csv.')
 
     tbl_list = (table_transpose(tokens) if key_dir == 'vertical'
                 else tokens)
