@@ -32,7 +32,8 @@ def flatten(lst, levels=None):
     def _core(lst, f):
         return chain.from_iterable(
             (f(l) if isinstance(l, MutableSequence) else [l]
-             for l in lst ))
+             for l in lst
+             if l not in  (None, 'None', 'null') ))
 
     def _wrapper1(lst):
         return _core(lst, _wrapper1)
@@ -50,7 +51,8 @@ def simple_flatten(lst):
 
 
 if __name__ == '__main__':
-
-    print (flatten([1, [2, 3], 4]))
-    print (flatten([[1,2], [2, 3], [[4]]], levels=1))
-    print (flatten([[1,[]], [[[2], 3]], [[4]]], levels=2))
+    test_data1 = [1, 2, [3, [4, [5]], 6], 7]
+    print (flatten(test_data1))
+    print (flatten(test_data1, levels=1))
+    print (flatten(test_data1, levels=2))
+    print (flatten([[1,[]], [[[2], 3], None], [[4]]], levels=2))
