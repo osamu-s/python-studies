@@ -2,7 +2,7 @@
 from collections import MutableSequence
 
 def flatten(mylist, levels=None):
-    def _core(ls, levels, ret):
+    def _core(ls, levels):
         if levels is not None:
             levels = int(levels) -1
         for element in ls:
@@ -11,12 +11,14 @@ def flatten(mylist, levels=None):
                 continue
             elif (isinstance(element, MutableSequence) and
                   (levels is None or levels >= 0) ):
-                    _core(element, levels, ret)
+                    _core(element, levels)
             else:
                 ret.append(element)
-        return ret
+        return
 
-    return _core(mylist, levels, [])
+    ret = []
+    _core(mylist, levels)
+    return ret
 
 if __name__ == '__main__':
 
