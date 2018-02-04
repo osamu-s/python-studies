@@ -15,10 +15,10 @@ def from_table(table_str, ttype='pretty', key_dir='horizontal'):
                horizontal_char='-',
                junction_char='+'):
 
-        # find a frame line
+        # find a frame line, without title
         j = re.escape(junction_char)
         h = re.escape(horizontal_char)
-        frm = re.compile('^(' + j + h + '+)+' + j + '$')
+        frm = re.compile('^(' + j + h + '+){2,}' + j + '$')
         tbl_frame = next(itertools.ifilter(lambda x: frm.match(x),
                                            tbl_ln), None)
         if tbl_frame == None:
