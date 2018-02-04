@@ -2,7 +2,9 @@
 
 import json
 import csv
+import re
 from collections import OrderedDict
+import itertools
 
 def table_transpose(table_list):
     return (list(ln) for ln in zip(*table_list))
@@ -10,13 +12,24 @@ def table_transpose(table_list):
 
 def from_table(table_str, ttype='pretty', key_dir='horizontal'):
     def from_pretty(tbl_ln, 
-               frame=0,
                horizontal_char='-',
                junction_char='+'):
-        tbl_frame = tbl_ln[frame]
+
+        # find a frame line
+        j = re.escape(junction_char)
+        h = re.escape(horizontal_char)
+        frm = re.compile('^(' + j + h + '+)+' + j + '$')
+        tbl_frame = next(itertools.ifilter(lambda x: frm.match(x),
+                                           tbl_ln), None)
+        if tbl_frame == None:
+            raise Error('No frame line in the table')
+
+        # determine slicing positions
         sep_idxs = [ i for i, c in enumerate(tbl_frame)
                      if c == junction_char ]
         slices = [ (s+1, e-1) for s, e in zip([0]+sep_idxs, sep_idxs)[1:] ]
+
+        # tokenize each line
         return ([ln[s:e].strip() for s, e in slices]
                 for ln in tbl_ln
                 if ln != tbl_frame )
