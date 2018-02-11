@@ -51,8 +51,11 @@ def simple_flatten(lst):
 
 
 if __name__ == '__main__':
-    test_data1 = [1, 2, [3, [4, [5]], 6], 7]
-    print (flatten(test_data1))
-    print (flatten(test_data1, levels=1))
-    print (flatten(test_data1, levels=2))
-    print (flatten([[1,[]], [[[2], 3], None], [[4]]], levels=2))
+    print (flatten([1, [2, 3], 4]))
+    print (flatten([[1,2], [2, 3], [[4]]], levels=1))
+    # nil break example: expected [1, 2, 3, 4] but [1]
+    print (flatten([1, None, [2, 3], 4]))
+    print (flatten([1, [], [2, 3], 4]))
+    # flatten level error example
+    print (flatten([[1,2], [2, 3], [[4]]], levels=1))
+

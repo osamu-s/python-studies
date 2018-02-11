@@ -21,9 +21,10 @@ def flatten(mylist, levels=None):
     return ret
 
 if __name__ == '__main__':
-
-    print (flatten([1, 2, 3, 4]))
     print (flatten([1, [2, 3], 4]))
     print (flatten([[1,2], [2, 3], [[4]]], levels=1))
-    print (flatten([[1,[]], [[[2], 3]], [[4]]]))
-    print (flatten([[1,[]], [[[2], 3]], [[4]]], levels=2))
+    # nil break example: expected [1, 2, 3, 4] but [1]
+    print (flatten([1, None, [2, 3], 4]))
+    print (flatten([1, [], [2, 3], 4]))
+    # flatten level error example
+    print (flatten([[1,2], [2, 3], [[4]]], levels=1))
