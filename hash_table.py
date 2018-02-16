@@ -45,13 +45,13 @@ def hash_table(data, key_item):
 
     # Check if data is valid, and convert to list
     if isinstance(data, Mapping):
-        data = data.values()
+        lst_data = data.values()
     elif isinstance(data, Iterable):
-        pass
+        lst_data = data
     else:
         raise TypeError("Type is not a valid list, set, or dict")
 
-    return reduce(update_ht, data, defaultdict(list))
+    return reduce(update_ht, lst_data, defaultdict(list))
 
 def main():
     testlist=[{ 'name': 'k1-c27-14-sv',

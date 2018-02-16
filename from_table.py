@@ -39,14 +39,13 @@ def from_table(table_str, ttype='pretty', key_dir='horizontal'):
                           delimiter=delimiter,
                           skipinitialspace=True ))
 
+    def tbl_type_error(tbl_ln):
+        msg = 'Table Type Error: from_table accepts only pretty or csv.'
+        raise TypeError(msg)
 
-    tbl_ln = table_str.splitlines()
-    if ttype == 'pretty':
-        tokens = from_pretty(tbl_ln)
-    elif ttype == 'csv': 
-        tokens = from_csv(tbl_ln)
-    else:
-        raise TypeError('Table Type Error: from_table accepts only pretty or csv.')
+    f = { 'pretty': from_pretty,
+          'csv': from_csv }.get(ttype, tbl_type_error)
+    tokens= f(table_str.splitlines())
 
     tbl_list = (table_transpose(tokens) if key_dir == 'vertical'
                 else tokens)
